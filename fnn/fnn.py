@@ -43,7 +43,7 @@ def testP():
 data_in = []
 data_out = []
 
-max_epoch = 200
+max_epoch = 300
 step = 0.05
 
 input2hidden = None
