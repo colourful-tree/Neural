@@ -31,6 +31,18 @@ def loadData():
                 data_out.append([0,1,0])
             else:
                 data_out.append([0,0,1])
+def cal_loss(target,out):
+    global outDim
+    #return dot((target - out),(target-out).transpose())
+    # target*lnout + (1-target)*ln(1-out)
+    return dot(array(target).reshape(1,outDim),log(out).reshape(outDim,1))+dot((ones(outDim)-target).reshape(1,outDim),log(ones(outDim)-out).reshape(outDim,1))
+
+def print_loss():
+    global loss
+    for i in range(len(loss)):
+        if i % 3 == 0:
+            print -loss[i]
+
 def testP():
     total = len(data_in)
     cnt = 0.0
@@ -43,24 +55,27 @@ def testP():
 data_in = []
 data_out = []
 
-max_epoch = 500
-step = 0.01
+max_epoch = 100
+step = 0.05
 
 input2hidden = None
 hidden2output = None
+loss = []
 inDim, hiddenDim, outDim = 4, 10, 3
 initNet(inDim,hiddenDim,outDim)
 loadData()
 
 for i in range(max_epoch):
+    loss_epoch = 0
     for data in range(len(data_in)):
         input, hidden, output = forward(data_in[data])
+        loss_epoch += cal_loss(data_out[data],output)
         # w* = w + n * input * (T-out)
         # h2o
         for n in range(hiddenDim):
             #fx1_fx = output * (ones(outDim) - output)
             #print fx1_fx
-            hidden2output[n,:] += step * dot(hidden[:,n],(array(data_out[data]) - output))
+            hidden2output[n,:] += step * dot(hidden[:,n],(array(data_out[data]) - output))# * fx1_fx[0]
         #print "---"
         # w* = w + n * input * ()
         # i2h
@@ -70,8 +85,11 @@ for i in range(max_epoch):
             #fx1_fx = hidden * (ones(hiddenDim) - hidden)
             #print fx1_fx[0]
             #print step * dot(input[:,n], tmp.transpose())
-            input2hidden[n,:] += step * dot(input[:,n], tmp.transpose())
+            input2hidden[n,:] += step * dot(input[:,n], tmp.transpose())# * fx1_fx[0]
+    loss.append(loss_epoch)
+
 
 print testP()
+print_loss()
 #print forward([6.3,3.4,5.6,2.4])[2]
 #print forward([6.3,3.4,5.6,2.4])[2].argmax(axis=1)
