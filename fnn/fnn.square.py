@@ -1,5 +1,6 @@
 from numpy import *
 import random
+import matplotlib.pyplot as plt
 
 def initNet(inDim,hiddenDim,outDim):
     global input2hidden,hidden2output
@@ -36,9 +37,11 @@ def cal_loss(target,out):
 
 def print_loss():
     global loss
-    for i in range(len(loss)):
-        if i % 10 == 0:
-            print loss[i]
+    #for i in range(len(loss)):
+    #    if i % 10 == 0:
+    #        print loss[i]
+    plt.plot(range(0,len(loss)),[i[0] for i in loss],"r")
+    plt.show()
 
 def testP():
     total = len(data_in)
@@ -58,7 +61,7 @@ step = 0.05
 input2hidden = None
 hidden2output = None
 loss = []
-inDim, hiddenDim, outDim = 4, 10, 3
+inDim, hiddenDim, outDim = 4, 8, 3
 initNet(inDim,hiddenDim,outDim)
 loadData()
 
@@ -82,7 +85,7 @@ for i in range(max_epoch):
             fx1_fx = hidden * (ones(hiddenDim) - hidden)
             #print fx1_fx[0]
             #print step * dot(input[:,n], tmp.transpose())
-            input2hidden[n,:] += step * dot(input[:,n], tmp.transpose()) * fx1_fx[0]
+            input2hidden[n,:] += step * dot(tmp,input[:,n]) * fx1_fx[0]
     loss.append(loss_epoch)
 
 

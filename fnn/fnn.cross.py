@@ -1,5 +1,6 @@
 from numpy import *
 import random
+import matplotlib.pyplot as plt
 
 def initNet(inDim,hiddenDim,outDim):
     global input2hidden,hidden2output
@@ -33,21 +34,23 @@ def loadData():
                 data_out.append([0,0,1])
 def cal_loss(target,out):
     global outDim
-    #return dot((target - out),(target-out).transpose())
-    # target*lnout + (1-target)*ln(1-out)
+    # loss = target*lnout + (1-target)*ln(1-out)
     return dot(array(target).reshape(1,outDim),log(out).reshape(outDim,1))+dot((ones(outDim)-target).reshape(1,outDim),log(ones(outDim)-out).reshape(outDim,1))
 
 def print_loss():
     global loss
-    for i in range(len(loss)):
-        if i % 3 == 0:
-            print -loss[i]
+    #for i in range(len(loss)):
+    #    if i % 3 == 0:
+    #        print -loss[i]
+    plt.plot(range(0,len(loss)),[-i[0] for i in loss],"r")
+    plt.show()
 
 def testP():
     total = len(data_in)
     cnt = 0.0
     for i in range(total):
         res = forward(data_in[i])[2].argmax(axis=1)
+        #print forward(data_in[i])[2]
         if data_out[i][res[0]] == 1:
             cnt += 1
     return cnt/total
@@ -55,13 +58,13 @@ def testP():
 data_in = []
 data_out = []
 
-max_epoch = 100
-step = 0.05
+max_epoch = 200
+step = 0.03
 
 input2hidden = None
 hidden2output = None
 loss = []
-inDim, hiddenDim, outDim = 4, 10, 3
+inDim, hiddenDim, outDim = 4, 8, 3
 initNet(inDim,hiddenDim,outDim)
 loadData()
 
@@ -75,17 +78,18 @@ for i in range(max_epoch):
         for n in range(hiddenDim):
             #fx1_fx = output * (ones(outDim) - output)
             #print fx1_fx
-            hidden2output[n,:] += step * dot(hidden[:,n],(array(data_out[data]) - output))# * fx1_fx[0]
+            #hidden2output[n,:] += step * dot((array(data_out[data]) - output).transpose(),hidden[:,n]).transpose()# * fx1_fx[0]
+            hidden2output[n,:] -= step * dot((output-array(data_out[data])).transpose(),hidden[:,n]).transpose()# * fx1_fx[0]
         #print "---"
         # w* = w + n * input * ()
         # i2h
         for n in range(inDim):
-            tmp = dot(hidden2output, (array(data_out[data]) - output).transpose())
+            #tmp = dot(hidden2output, (array(data_out[data]) - output).transpose())
+            tmp = dot(hidden2output, (array( output - data_out[data])).transpose())
             #print hidden       
-            #fx1_fx = hidden * (ones(hiddenDim) - hidden)
+            fx1_fx = hidden * (ones(hiddenDim) - hidden)
             #print fx1_fx[0]
-            #print step * dot(input[:,n], tmp.transpose())
-            input2hidden[n,:] += step * dot(input[:,n], tmp.transpose())# * fx1_fx[0]
+            input2hidden[n,:] -= step * dot(tmp,input[:,n]) * fx1_fx[0]
     loss.append(loss_epoch)
 
 
