@@ -69,11 +69,13 @@ movie_title_max_len = max([len(i[1].split(" ")) for i in x_movie ])
 vocab_processor_movie_title = learn.preprocessing.VocabularyProcessor(movie_title_max_len)
 movie_title = np.array(list(vocab_processor_movie_title.fit_transform([i[1] for i in x_movie])))
 
-movie_class_max_len = max([len(i[2].split("|")) for i in x_movie ])
+movie_class_max_len = max([len(i[2].split(" ")) for i in x_movie ])
 vocab_processor_movie_class = learn.preprocessing.VocabularyProcessor(movie_class_max_len)
 movie_class = np.array(list(vocab_processor_movie_class.fit_transform([i[2] for i in x_movie])))
 
 y = np.array(y)
+print "---"
+print movie_class_max_len
 
 # Build vocabulary
 # Write vocabulary
