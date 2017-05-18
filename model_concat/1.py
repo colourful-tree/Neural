@@ -28,3 +28,5 @@ with tf.Session() as sess:
             print "accuracy:",sess.run(accuracy, feed_dict={x: mnist.test.images, y_actual: mnist.test.labels})
     saver = tf.train.Saver()
     save_path = saver.save(sess, "model/model.ckpt")
+
+print "save model!"
